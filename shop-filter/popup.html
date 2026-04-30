@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    width: 360px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #1a1a1a;
+    color: #e8e8e8;
+  }
+  .tabs {
+    display: flex;
+    background: #0f0f0f;
+    border-bottom: 1px solid #333;
+  }
+  .tab {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: #ccc; }
+  .tab.active {
+    color: #4a90e2;
+    border-bottom-color: #4a90e2;
+    background: #1a1a1a;
+  }
+  .tab-panel { display: none; padding: 16px; }
+  .tab-panel.active { display: block; }
+  h1 { font-size: 13px; margin: 0 0 12px; font-weight: 600; color: #ccc; letter-spacing: 0.3px; text-transform: uppercase; }
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  label { font-size: 13px; cursor: pointer; }
+  .field-label { font-size: 13px; display: block; margin-bottom: 6px; color: #ccc; }
+  textarea {
+    width: 100%; box-sizing: border-box;
+    background: #2a2a2a; color: #e8e8e8;
+    border: 1px solid #444; border-radius: 4px;
+    padding: 8px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px; resize: vertical; line-height: 1.5;
+  }
+  textarea.must-have { min-height: 60px; }
+  textarea.blocked { min-height: 120px; }
+  textarea:focus, input:focus, select:focus { outline: none; border-color: #4a90e2; }
+  .help { font-size: 11px; color: #888; margin: 4px 0 12px; line-height: 1.5; }
+  button {
+    background: #4a90e2; color: white; border: none;
+    padding: 8px 18px; border-radius: 4px; cursor: pointer;
+    font-size: 13px; font-weight: 500;
+  }
+  button:hover { background: #357abd; }
+  .status { font-size: 12px; color: #5cb85c; margin-left: 10px; opacity: 0; transition: opacity 0.25s; }
+  .status.show { opacity: 1; }
+  select, input[type="number"] {
+    background: #2a2a2a; color: #e8e8e8;
+    border: 1px solid #444; border-radius: 4px;
+    padding: 5px 8px; font-size: 13px;
+  }
+  input[type="number"] { width: 70px; }
+  hr { border: none; border-top: 1px solid #333; margin: 14px 0; }
+  .rating-display { font-size: 12px; color: #f0c14b; }
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tab active" data-tab="amazon">Amazon</div>
+  <div class="tab" data-tab="aliexpress">AliExpress</div>
+</div>
+
+<!-- Amazon panel -->
+<div class="tab-panel active" id="panel-amazon">
+  <div class="row">
+    <input type="checkbox" id="az-enabled" />
+    <label for="az-enabled">Enabled</label>
+  </div>
+  <div class="row">
+    <label for="az-mode">Mode:</label>
+    <select id="az-mode">
+      <option value="hide">Hide entirely</option>
+      <option value="grey">Grey out</option>
+    </select>
+  </div>
+
+  <hr>
+
+  <span class="field-label">Min star rating:</span>
+  <div class="row">
+    <input type="number" id="az-minRating" min="0" max="5" step="0.1" />
+    <span class="rating-display" id="az-ratingLabel">★★★★★</span>
+  </div>
+  <div class="row">
+    <input type="checkbox" id="az-hideUnrated" />
+    <label for="az-hideUnrated">Also hide items with no rating</label>
+  </div>
+
+  <span class="field-label">Default price range:</span>
+  <div class="row">
+    <span style="font-size:13px;">$</span>
+    <input type="number" id="az-minPrice" min="0" step="1" placeholder="min" />
+    <span style="font-size:13px;color:#888;">to</span>
+    <span style="font-size:13px;">$</span>
+    <input type="number" id="az-maxPrice" min="0" step="1" placeholder="max" />
+  </div>
+
+  <hr>
+
+  <div class="row">
+    <input type="checkbox" id="az-autoPrime" />
+    <label for="az-autoPrime">Auto-apply Prime filter</label>
+  </div>
+  <div class="row">
+    <label for="az-defaultSort">Default sort:</label>
+    <select id="az-defaultSort">
+      <option value="none">— Don't change —</option>
+      <option value="featured">Featured</option>
+      <option value="price-asc">Price: Low to high</option>
+      <option value="price-desc">Price: High to low</option>
+      <option value="review">Avg. customer review</option>
+      <option value="newest">Newest arrivals</option>
+      <option value="bestseller">Best Sellers</option>
+    </select>
+  </div>
+  <div class="row">
+    <input type="checkbox" id="az-infiniteScroll" />
+    <label for="az-infiniteScroll">Infinite scroll</label>
+  </div>
+  <div class="row">
+    <input type="checkbox" id="az-hideAds" />
+    <label for="az-hideAds">Hide sponsored / ads</label>
+  </div>
+
+  <hr>
+
+  <span class="field-label">Must-have keywords:</span>
+  <textarea id="az-mustHave" class="must-have" spellcheck="false" placeholder="brushless&#10;lithium"></textarea>
+  <p class="help">Listings must contain <b>ALL</b> of these to show. Empty = disabled.</p>
+
+  <span class="field-label">Blocked keywords:</span>
+  <textarea id="az-keywords" class="blocked" spellcheck="false" placeholder="saw&#10;cordless"></textarea>
+  <p class="help">Whole-word, case-insensitive. Add singular AND plural separately.</p>
+
+  <div class="row">
+    <button class="save-btn" data-site="amazon">Save</button>
+    <span class="status" id="az-status">Saved!</span>
+  </div>
+</div>
+
+<!-- AliExpress panel -->
+<div class="tab-panel" id="panel-aliexpress">
+  <div class="row">
+    <input type="checkbox" id="ae-enabled" />
+    <label for="ae-enabled">Enabled</label>
+  </div>
+  <div class="row">
+    <label for="ae-mode">Mode:</label>
+    <select id="ae-mode">
+      <option value="hide">Hide entirely</option>
+      <option value="grey">Grey out</option>
+    </select>
+  </div>
+
+  <hr>
+
+  <span class="field-label">Min star rating:</span>
+  <div class="row">
+    <input type="number" id="ae-minRating" min="0" max="5" step="0.1" />
+    <span class="rating-display" id="ae-ratingLabel">★★★★★</span>
+  </div>
+  <div class="row">
+    <input type="checkbox" id="ae-hideUnrated" />
+    <label for="ae-hideUnrated">Also hide items with no rating</label>
+  </div>
+  <p class="help">Heads-up: AliExpress hides ratings on many listings. Enabling "no rating" hides a lot.</p>
+
+  <span class="field-label">Min units sold:</span>
+  <div class="row">
+    <input type="number" id="ae-minSold" min="0" step="1" placeholder="0" />
+    <span style="font-size:11px;color:#888;">e.g. 100 = at least 100 sold</span>
+  </div>
+
+  <span class="field-label">Default price range:</span>
+  <div class="row">
+    <span style="font-size:13px;">$</span>
+    <input type="number" id="ae-minPrice" min="0" step="1" placeholder="min" />
+    <span style="font-size:13px;color:#888;">to</span>
+    <span style="font-size:13px;">$</span>
+    <input type="number" id="ae-maxPrice" min="0" step="1" placeholder="max" />
+  </div>
+
+  <hr>
+
+  <div class="row">
+    <input type="checkbox" id="ae-freeShipping" />
+    <label for="ae-freeShipping">Free shipping only</label>
+  </div>
+  <div class="row">
+    <input type="checkbox" id="ae-infiniteScroll" />
+    <label for="ae-infiniteScroll">Infinite scroll</label>
+  </div>
+  <p class="help">
+    Replaces AliExpress's native scroll behavior. Loads next page (<code>?page=N</code>) when you scroll near the bottom. Disable if pages don't load correctly.
+  </p>
+  <div class="row">
+    <input type="checkbox" id="ae-hideAds" />
+    <label for="ae-hideAds">Hide sponsored / ads</label>
+  </div>
+  <div class="row">
+    <input type="checkbox" id="ae-debugMode" />
+    <label for="ae-debugMode">Debug mode (show detected ★/sold on tiles)</label>
+  </div>
+  <div class="row">
+    <label for="ae-defaultSort">Default sort:</label>
+    <select id="ae-defaultSort">
+      <option value="none">— Don't change —</option>
+      <option value="default">Best match</option>
+      <option value="orders">Best selling</option>
+      <option value="price-asc">Price: Low to high</option>
+      <option value="price-desc">Price: High to low</option>
+      <option value="newest">Newest first</option>
+    </select>
+  </div>
+
+  <hr>
+
+  <span class="field-label">Must-have keywords:</span>
+  <textarea id="ae-mustHave" class="must-have" spellcheck="false"></textarea>
+  <p class="help">Listings must contain <b>ALL</b> of these to show.</p>
+
+  <span class="field-label">Blocked keywords:</span>
+  <textarea id="ae-keywords" class="blocked" spellcheck="false"></textarea>
+  <p class="help">Whole-word, case-insensitive.</p>
+
+  <div class="row">
+    <button class="save-btn" data-site="aliexpress">Save</button>
+    <span class="status" id="ae-status">Saved!</span>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
