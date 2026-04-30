@@ -1,7 +1,9 @@
 # Shop Filter
 
-Personal Chrome/Brave extension that filters search results on Amazon and Ali<img width="411" height="682" alt="image" src="https://github.com/user-attachments/assets/bd098c7f-fe82-44af-8904-6b5bbc8d1bcd" />
-Express by keyword, rating, price, and more.
+Personal Chrome/Brave extension that filters search results on Amazon and AliExpress by keyword, rating, price, and more.
+
+<img width="411" height="682" alt="image" src="https://github.com/user-attachments/assets/a96242f9-6622-42ae-88e7-612125a9f4e7" />
+
 
 ## Install
 
