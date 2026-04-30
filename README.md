@@ -8,8 +8,8 @@ Personal Chrome/Brave extension that filters search results on Amazon and AliExp
 
 ## Install
 
-1. Download or clone this repo:
-git clone https://github.com/YOUR-USERNAME/shop-filter.git
+1. Download Latest Release:
+[git clone https://github.com/YOUR-USERNAME/shop-filter.git](https://github.com/Atomic258/shop-filter/releases)
 2. Open `chrome://extensions` (or `brave://extensions`)
 3. Toggle **Developer mode** ON (top right)
 4. Click **Load unpacked** → select the `shop-filter` folder
